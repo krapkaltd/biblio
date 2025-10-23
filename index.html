@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математична бібліотека</title>
+    <style>
+        /* Весь CSS залишається без змін */
+        :root {
+            --primary-bg: #f8f9fa;
+            --secondary-bg: #ffffff;
+            --accent-color: #4361ee;
+            --accent-light: #e6f0ff;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --success-color: #38b2ac;
+            --warning-color: #ed8936;
+            --danger-color: #e53e3e;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: var(--secondary-bg);
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent-color);
+        }
+        
+        .tagline {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.7rem 1.5rem;
+            margin: 0 0.3rem 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .nav-btn:hover {
+            background: var(--accent-light);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .nav-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        
+        .tab-content {
+            display: none;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-top: 1.5rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            padding-bottom: 0.7rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .materials-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .material-item {
+            display: flex;
+            align-items: center;
+            background: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .material-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+            border-color: var(--accent-color);
+        }
+        
+        .material-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            width: 40px;
+            text-align: center;
+            color: var(--accent-color);
+        }
+        
+        .material-content {
+            flex: 1;
+        }
+        
+        .material-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            color: var(--text-primary);
+        }
+        
+        .material-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .material-meta {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .material-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .material-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .material-link:hover {
+            background: var(--accent-light);
+        }
+        
+        .add-material-form {
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: #3651d4;
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .file-upload-container {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            background: var(--primary-bg);
+        }
+        
+        .file-upload-container:hover {
+            border-color: var(--accent-color);
+            background: var(--accent-light);
+        }
+        
+        .file-upload-label {
+            display: block;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-info {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        .file-upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+        
+        .success-message {
+            background: rgba(56, 178, 172, 0.1);
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 6px;
+            color: var(--text-primary);
+        }
+        
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .preview-content {
+            background: var(--secondary-bg);
+            border-radius: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            padding: 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: none;
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        
+        .preview-title {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+        
+        .close-preview {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 1001;
+        }
+        
+        .preview-body {
+            flex: 1;
+            overflow: auto;
+            padding: 0;
+            background: white;
+        }
+        
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            background: white;
+        }
+        
+        .text-preview {
+            background: white;
+            color: var(--text-primary);
+            padding: 2rem;
+            height: 100%;
+            overflow: auto;
+            white-space: pre-wrap;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        .doc-preview {
+            background: white;
+            color: var(--text-primary);
+            padding: 2rem;
+            height: 100%;
+            overflow: auto;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        
+        .doc-preview a {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+        
+        .doc-preview a[href] {
+            color: var(--accent-color);
+            text-decoration: underline;
+            target: _blank;
+        }
+        
+        .unsupported-preview {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: white;
+        }
+        
+        .pdf-container {
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pdf-controls {
+            padding: 1rem;
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .pdf-controls button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .page-input {
+            width: 60px;
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin: 0 0.5rem;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+        
+        .zoom-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .zoom-btn:hover {
+            background: #3651d4;
+        }
+        
+        .pdf-viewer {
+            flex: 1;
+            overflow: auto;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem;
+        }
+        
+        .pdf-page {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            max-width: 100%;
+        }
+        
+        .pdf-page canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .docx-controls {
+            padding: 1rem;
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .docx-controls button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .font-size-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-left: 1rem;
+        }
+        
+        .font-size-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .font-size-btn:hover {
+            background: #3651d4;
+        }
+        
+        .font-size-display {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin: 0 0.5rem;
+        }
+        
+        .files-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--primary-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-name {
+            flex: 1;
+            margin-right: 1rem;
+        }
+        
+        .file-size {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .remove-file {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--success-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        .upload-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .upload-btn {
+            background: var(--success-color);
+        }
+        
+        .clear-btn {
+            background: var(--warning-color);
+        }
+        
+        .upload-type-selector {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .upload-type-btn {
+            flex: 1;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .upload-type-btn.active {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .link-form-container {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--primary-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .backup-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .backup-section h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .backup-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .backup-btn {
+            background: var(--warning-color);
+        }
+        
+        .restore-btn {
+            background: var(--success-color);
+        }
+        
+        .backup-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--primary-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+                margin: 0 0.3rem 0.5rem;
+            }
+            
+            .preview-header {
+                padding: 1rem;
+            }
+            
+            .preview-title {
+                font-size: 1.2rem;
+            }
+            
+            .upload-actions {
+                flex-direction: column;
+            }
+            
+            .material-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .material-actions {
+                margin-top: 0.8rem;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .upload-type-selector {
+                flex-direction: column;
+            }
+            
+            .backup-actions {
+                flex-direction: column;
+            }
+            
+            .pdf-controls, .docx-controls {
+                flex-wrap: wrap;
+            }
+            
+            .pdf-viewer {
+                padding: 1rem;
+            }
+            
+            .zoom-controls, .font-size-controls {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Математична бібліотека</div>
+        <div class="tagline">Підручники, матеріали та корисні ресурси з математики</div>
+        <nav>
+            <button class="nav-btn active" data-tab="textbooks">Підручники</button>
+            <button class="nav-btn" data-tab="algebra">Алгебра</button>
+            <button class="nav-btn" data-tab="geometry">Геометрія</button>
+            <button class="nav-btn" data-tab="useful">Корисне</button>
+            <button class="nav-btn" data-tab="add">Додати матеріали</button>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <!-- Нова вкладка для підручників -->
+        <div id="textbooks" class="tab-content active">
+            <h2>Підручники</h2>
+            <div class="materials-list" id="textbooks-materials">
+                <div class="empty-message">Поки що немає матеріалів у цьому розділі</div>
+            </div>
+        </div>
+        
+        <div id="algebra" class="tab-content">
+            <h2>Алгебра</h2>
+            <div class="materials-list" id="algebra-materials">
+                <div class="empty-message">Поки що немає матеріалів у цьому розділі</div>
+            </div>
+        </div>
+        
+        <div id="geometry" class="tab-content">
+            <h2>Геометрія</h2>
+            <div class="materials-list" id="geometry-materials">
+                <div class="empty-message">Поки що немає матеріалів у цьому розділі</div>
+            </div>
+        </div>
+        
+        <div id="useful" class="tab-content">
+            <h2>Корисне</h2>
+            <div class="materials-list" id="useful-materials">
+                <div class="empty-message">Поки що немає матеріалів у цьому розділі</div>
+            </div>
+        </div>
+        
+        <div id="add" class="tab-content">
+            <h2>Додати матеріали</h2>
+            
+            <div class="success-message">
+                <strong>Додавання матеріалів:</strong> Ви можете завантажити файли або додати посилання на корисні ресурси.
+            </div>
+            
+            <div class="upload-type-selector">
+                <button type="button" class="upload-type-btn active" id="file-type-btn">Файли</button>
+                <button type="button" class="upload-type-btn" id="link-type-btn">Посилання</button>
+            </div>
+            
+            <!-- Форма для завантаження файлів -->
+            <div id="file-upload-group">
+                <form class="add-material-form" id="batch-upload-form">
+                    <div class="form-group">
+                        <label for="batch-category">Категорія для всіх файлів</label>
+                        <select id="batch-category" required>
+                            <option value="">Оберіть категорію</option>
+                            <option value="textbooks">Підручники</option>
+                            <option value="algebra">Алгебра</option>
+                            <option value="geometry">Геометрія</option>
+                            <option value="useful">Корисне</option>
+                        </select>
+                    </div>
+                    
+                    <div class="file-upload-container">
+                        <div class="file-upload-icon">📁</div>
+                        <label for="file-upload" class="file-upload-label">Оберіть файли для завантаження</label>
+                        <input type="file" id="file-upload" class="file-input" multiple>
+                        <div class="file-info" id="file-info">Файли не обрані</div>
+                    </div>
+                    
+                    <div class="files-list" id="files-list" style="display: none;">
+                        <h4>Обрані файли:</h4>
+                        <div id="files-container"></div>
+                    </div>
+                    
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text"></div>
+                    
+                    <div class="upload-actions">
+                        <button type="submit" class="upload-btn" id="upload-btn">Завантажити всі файли</button>
+                        <button type="button" class="clear-btn" id="clear-btn">Очистити список</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Форма для додавання посилань -->
+            <div id="link-upload-group" style="display: none;">
+                <div class="link-form-container">
+                    <form class="add-material-form" id="link-material-form">
+                        <div class="form-group">
+                            <label for="link-title">Назва посилання</label>
+                            <input type="text" id="link-title" required placeholder="Наприклад: Онлайн-курс з алгебри">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="link-description">Опис (необов'язково)</label>
+                            <textarea id="link-description" rows="3" placeholder="Короткий опис ресурсу..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="link-url">Посилання</label>
+                            <input type="url" id="link-url" required placeholder="https://example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="link-category">Категорія</label>
+                            <select id="link-category" required>
+                                <option value="textbooks">Підручники</option>
+                                <option value="algebra">Алгебра</option>
+                                <option value="geometry">Геометрія</option>
+                                <option value="useful">Корисне</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit">Додати посилання</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Секція для резервного копіювання та відновлення -->
+            <div class="backup-section">
+                <h3>Резервне копіювання та відновлення</h3>
+                <p>Експортуйте всі ваші матеріали у файл для збереження або імпортуйте їх з іншого пристрою.</p>
+                
+                <div class="backup-actions">
+                    <button type="button" class="backup-btn" id="export-btn">Експортувати всі матеріали</button>
+                    <button type="button" class="restore-btn" id="import-btn">Імпортувати матеріали</button>
+                </div>
+                
+                <div class="backup-info">
+                    <strong>Як це працює:</strong> Експортуйте ваші матеріали у файл JSON, який можна зберегти на комп'ютері або в хмарі. Потім ви можете імпортувати цей файл на іншому пристрої чи в іншому браузері, щоб відновити всі ваші матеріали.
+                </div>
+                
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальне вікно для перегляду файлів -->
+    <div class="preview-modal" id="preview-modal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h3 class="preview-title" id="preview-title">Перегляд файлу</h3>
+                <button class="close-preview" id="close-preview">&times;</button>
+            </div>
+            <div class="preview-body" id="preview-container">
+                <!-- Тут буде відображатися вміст файлу -->
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Математична бібліотека &copy; 2023 | Використовує IndexedDB для зберігання файлів</p>
+    </footer>
+
+    <!-- Підключення бібліотек для роботи з документами -->
+    <script src="https://unpkg.com/mammoth@1.4.17/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+    <script>
+        // Глобальні змінні для IndexedDB
+        let db;
+        const DB_NAME = 'MathLibraryDB';
+        const STORE_NAME = 'materials';
+        
+        // Змінні для управління файлами
+        let selectedFiles = [];
+        let currentObjectURL = null;
+        
+        // Змінні для PDF.js
+        let pdfDoc = null;
+        let currentPageNum = 1;
+        let scale = 1.5;
+        
+        // Змінні для контролю розміру шрифту в документах
+        let currentFontSize = 100; // у відсотках
+        
+        // Збережемо оригінальний заголовок сторінки
+        const originalTitle = document.title;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ініціалізація IndexedDB
+            initIndexedDB().then(() => {
+                console.log('IndexedDB ініціалізовано');
+                displayMaterials();
+            }).catch(error => {
+                console.error('Помилка ініціалізації IndexedDB:', error);
+            });
+            
+            // Навігація між вкладками
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Оновлення активних кнопок
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Оновлення активних вкладок
+                    tabContents.forEach(tab => tab.classList.remove('active'));
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+            
+            // Перемикання між типами завантаження
+            const fileTypeBtn = document.getElementById('file-type-btn');
+            const linkTypeBtn = document.getElementById('link-type-btn');
+            const fileUploadGroup = document.getElementById('file-upload-group');
+            const linkUploadGroup = document.getElementById('link-upload-group');
+            
+            fileTypeBtn.addEventListener('click', function() {
+                setActiveUploadType('file');
+            });
+            
+            linkTypeBtn.addEventListener('click', function() {
+                setActiveUploadType('link');
+            });
+            
+            function setActiveUploadType(type) {
+                // Оновлення активних кнопок
+                fileTypeBtn.classList.remove('active');
+                linkTypeBtn.classList.remove('active');
+                
+                // Приховування всіх груп
+                fileUploadGroup.style.display = 'none';
+                linkUploadGroup.style.display = 'none';
+                
+                // Відображення потрібної групи
+                if (type === 'file') {
+                    fileTypeBtn.classList.add('active');
+                    fileUploadGroup.style.display = 'block';
+                } else if (type === 'link') {
+                    linkTypeBtn.classList.add('active');
+                    linkUploadGroup.style.display = 'block';
+                }
+            }
+            
+            // Обробка вибору файлів
+            const fileUpload = document.getElementById('file-upload');
+            const fileInfo = document.getElementById('file-info');
+            const filesList = document.getElementById('files-list');
+            const filesContainer = document.getElementById('files-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            const uploadBtn = document.getElementById('upload-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const batchUploadForm = document.getElementById('batch-upload-form');
+            
+            fileUpload.addEventListener('change', function(e) {
+                const newFiles = Array.from(e.target.files);
+                
+                // Додаємо нові файли до списку
+                newFiles.forEach(file => {
+                    // Перевіряємо, чи файл ще не доданий
+                    if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                        selectedFiles.push(file);
+                    }
+                });
+                
+                updateFilesList();
+            });
+            
+            // Оновлення списку файлів
+            function updateFilesList() {
+                if (selectedFiles.length > 0) {
+                    fileInfo.textContent = `Обрано ${selectedFiles.length} файлів`;
+                    filesList.style.display = 'block';
+                    
+                    // Очищення списку файлів
+                    filesContainer.innerHTML = '';
+                    
+                    // Додавання файлів до списку
+                    selectedFiles.forEach((file, index) => {
+                        const fileItem = document.createElement('div');
+                        fileItem.className = 'file-item';
+                        fileItem.innerHTML = `
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
+                            <button class="remove-file" data-index="${index}">&times;</button>
+                        `;
+                        filesContainer.appendChild(fileItem);
+                    });
+                    
+                    // Додавання обробників для кнопок видалення
+                    document.querySelectorAll('.remove-file').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const index = parseInt(this.getAttribute('data-index'));
+                            selectedFiles.splice(index, 1);
+                            updateFilesList();
+                        });
+                    });
+                } else {
+                    fileInfo.textContent = 'Файли не обрані';
+                    filesList.style.display = 'none';
+                }
+            }
+            
+            // Очищення списку файлів
+            clearBtn.addEventListener('click', function() {
+                selectedFiles = [];
+                updateFilesList();
+                fileUpload.value = '';
+            });
+            
+            // Обробка групового завантаження
+            batchUploadForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const category = document.getElementById('batch-category').value;
+                
+                if (!category) {
+                    alert('Будь ласка, оберіть категорію для файлів');
+                    return;
+                }
+                
+                if (selectedFiles.length === 0) {
+                    alert('Будь ласка, оберіть файли для завантаження');
+                    return;
+                }
+                
+                // Показати прогрес бар
+                progressBar.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Підготовка до завантаження...';
+                
+                let uploadedCount = 0;
+                let errors = [];
+                
+                // Завантаження кожного файлу
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    
+                    try {
+                        await processFileUpload(file, category);
+                        uploadedCount++;
+                        
+                        // Оновлення прогрес бару
+                        const progress = (uploadedCount / selectedFiles.length) * 100;
+                        progressFill.style.width = `${progress}%`;
+                        progressText.textContent = `Завантажено ${uploadedCount} з ${selectedFiles.length} файлів`;
+                    } catch (error) {
+                        console.error(`Помилка при завантаженні файлу ${file.name}:`, error);
+                        errors.push(file.name);
+                    }
+                }
+                
+                // Оновлення інтерфейсу після завантаження
+                setTimeout(() => {
+                    let message = `Успішно завантажено ${uploadedCount} з ${selectedFiles.length} файлів у категорію "${getCategoryName(category)}"`;
+                    
+                    if (errors.length > 0) {
+                        message += `\n\nПомилки при завантаженні: ${errors.join(', ')}`;
+                    }
+                    
+                    alert(message);
+                    
+                    // Скидання форми
+                    selectedFiles = [];
+                    updateFilesList();
+                    fileUpload.value = '';
+                    progressBar.style.display = 'none';
+                    progressText.textContent = '';
+                    
+                    // Оновлення відображення матеріалів
+                    displayMaterials();
+                    
+                    // Перехід до відповідної вкладки
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    document.querySelector(`[data-tab="${category}"]`).classList.add('active');
+                    
+                    tabContents.forEach(tab => tab.classList.remove('active'));
+                    document.getElementById(category).classList.add('active');
+                }, 500);
+            });
+            
+            // Обробка форми для додавання посилань
+            const linkMaterialForm = document.getElementById('link-material-form');
+            linkMaterialForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('link-title').value;
+                const description = document.getElementById('link-description').value;
+                const link = document.getElementById('link-url').value;
+                const category = document.getElementById('link-category').value;
+                
+                if (!title || !link) {
+                    alert('Будь ласка, заповніть обов\'язкові поля');
+                    return;
+                }
+                
+                const newMaterial = {
+                    title,
+                    category: category,
+                    description,
+                    type: 'link',
+                    link: link,
+                    createdAt: new Date().toISOString()
+                };
+                
+                try {
+                    await saveMaterial(newMaterial);
+                    
+                    // Очищення форми
+                    linkMaterialForm.reset();
+                    
+                    // Повідомлення про успіх
+                    alert(`Посилання успішно додано до категорії "${getCategoryName(category)}"!`);
+                    
+                    // Оновлення відображення матеріалів
+                    displayMaterials();
+                    
+                    // Перехід до відповідної вкладки
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    document.querySelector(`[data-tab="${category}"]`).classList.add('active');
+                    
+                    tabContents.forEach(tab => tab.classList.remove('active'));
+                    document.getElementById(category).classList.add('active');
+                } catch (error) {
+                    console.error('Помилка при додаванні посилання:', error);
+                    alert('Помилка при додаванні посилання');
+                }
+            });
+            
+            // Експорт даних
+            document.getElementById('export-btn').addEventListener('click', exportData);
+            
+            // Імпорт даних
+            document.getElementById('import-btn').addEventListener('click', function() {
+                document.getElementById('import-file').click();
+            });
+            
+            document.getElementById('import-file').addEventListener('change', importData);
+            
+            // Функція для форматування розміру файлу
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Байт';
+                const k = 1024;
+                const sizes = ['Байт', 'КБ', 'МБ', 'ГБ'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Функція для отримання назви категорії
+            function getCategoryName(category) {
+                const categories = {
+                    'textbooks': 'Підручники',
+                    'algebra': 'Алгебра',
+                    'geometry': 'Геометрія',
+                    'useful': 'Корисне'
+                };
+                return categories[category] || category;
+            }
+            
+            // Функція для обробки завантаження файлу
+            function processFileUpload(file, category) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = async function(e) {
+                        const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+                        
+                        const newMaterial = {
+                            title: fileNameWithoutExt,
+                            category,
+                            description: '',
+                            type: 'file',
+                            data: e.target.result,
+                            fileName: file.name,
+                            fileSize: formatFileSize(file.size),
+                            fileType: file.type,
+                            createdAt: new Date().toISOString()
+                        };
+                        
+                        try {
+                            await saveMaterial(newMaterial);
+                            resolve();
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    
+                    reader.onerror = function() {
+                        reject(new Error('Помилка при читанні файлу'));
+                    };
+                    
+                    reader.readAsDataURL(file);
+                });
+            }
+            
+            // Ініціалізація IndexedDB
+            function initIndexedDB() {
+                return new Promise((resolve, reject) => {
+                    // ВИПРАВЛЕНА ЧАСТИНА: Використовуємо більшу версію або відкриваємо без версії
+                    const request = indexedDB.open(DB_NAME);
+                    
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        db = request.result;
+                        resolve();
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        const database = event.target.result;
+                        
+                        // Створення сховища об'єктів, якщо воно не існує
+                        if (!database.objectStoreNames.contains(STORE_NAME)) {
+                            const store = database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                            store.createIndex('category', 'category', { unique: false });
+                        }
+                    };
+                    
+                    // Додаємо обробник для випадку, коли версія застаріла
+                    request.onblocked = () => {
+                        console.warn('База даних заблокована для оновлення');
+                    };
+                });
+            }
+            
+            // Збереження матеріалу в IndexedDB
+            function saveMaterial(material) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.add(material);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            
+            // Отримання всіх матеріалів з IndexedDB
+            function getAllMaterials() {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([STORE_NAME], 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.getAll();
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            
+            // Видалення матеріалу з IndexedDB
+            function deleteMaterial(id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.delete(id);
+                    
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            
+            // Очищення всіх матеріалів з IndexedDB
+            function clearAllMaterials() {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.clear();
+                    
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            
+            // Функція для отримання іконки для типу файлу
+            function getFileIcon(fileType) {
+                if (fileType === 'application/pdf') return '📕';
+                if (fileType.includes('word')) return '📝';
+                if (fileType.includes('sheet')) return '📊';
+                if (fileType.includes('presentation')) return '📑';
+                if (fileType.startsWith('image/')) return '🖼️';
+                if (fileType.startsWith('text/')) return '📄';
+                return '📎';
+            }
+            
+            // Функція для відображення матеріалів
+            async function displayMaterials() {
+                try {
+                    const allMaterials = await getAllMaterials();
+                    
+                    // Очищення контейнерів
+                    document.getElementById('textbooks-materials').innerHTML = '';
+                    document.getElementById('algebra-materials').innerHTML = '';
+                    document.getElementById('geometry-materials').innerHTML = '';
+                    document.getElementById('useful-materials').innerHTML = '';
+                    
+                    // Групування матеріалів за категоріями
+                    const materialsByCategory = {
+                        textbooks: allMaterials.filter(m => m.category === 'textbooks'),
+                        algebra: allMaterials.filter(m => m.category === 'algebra'),
+                        geometry: allMaterials.filter(m => m.category === 'geometry'),
+                        useful: allMaterials.filter(m => m.category === 'useful')
+                    };
+                    
+                    // Відображення матеріалів для кожної категорії
+                    Object.keys(materialsByCategory).forEach(category => {
+                        const container = document.getElementById(`${category}-materials`);
+                        const materials = materialsByCategory[category];
+                        
+                        if (materials.length === 0) {
+                            container.innerHTML = '<div class="empty-message">Поки що немає матеріалів у цьому розділі</div>';
+                        } else {
+                            materials.forEach(material => {
+                                const materialItem = document.createElement('div');
+                                materialItem.className = 'material-item';
+                                
+                                let fileIcon = '🔗';
+                                let metaInfo = '';
+                                let actions = '';
+                                
+                                if (material.type === 'file') {
+                                    fileIcon = getFileIcon(material.fileType);
+                                    actions = `
+                                        <a href="#" class="material-link preview-btn" data-id="${material.id}">Перегляд</a>
+                                        <a href="#" class="material-link download-btn" data-id="${material.id}" data-filename="${material.fileName}">Завантажити</a>
+                                    `;
+                                } else {
+                                    actions = `<a href="${material.link}" target="_blank" class="material-link">Перейти</a>`;
+                                }
+                                
+                                materialItem.innerHTML = `
+                                    <div class="material-icon">${fileIcon}</div>
+                                    <div class="material-content">
+                                        <div class="material-title">${material.type === 'file' ? material.fileName : material.title}</div>
+                                        ${material.description ? `<div class="material-description">${material.description}</div>` : ''}
+                                        ${metaInfo}
+                                    </div>
+                                    <div class="material-actions">
+                                        ${actions}
+                                        <a href="#" class="material-link delete-btn" data-id="${material.id}" style="color: var(--danger-color)">Видалити</a>
+                                    </div>
+                                `;
+                                
+                                container.appendChild(materialItem);
+                            });
+                        }
+                    });
+                    
+                    // Додавання обробників подій для кнопок
+                    addEventHandlers();
+                    
+                } catch (error) {
+                    console.error('Помилка при відображенні матеріалів:', error);
+                }
+            }
+            
+            // Додавання обробників подій для кнопок
+            function addEventHandlers() {
+                // Кнопки перегляду
+                document.querySelectorAll('.preview-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const materialId = parseInt(this.getAttribute('data-id'));
+                        openPreview(materialId);
+                    });
+                });
+                
+                // Кнопки завантаження
+                document.querySelectorAll('.download-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const materialId = parseInt(this.getAttribute('data-id'));
+                        const fileName = this.getAttribute('data-filename');
+                        downloadMaterial(materialId, fileName);
+                    });
+                });
+                
+                // Кнопки видалення
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const materialId = parseInt(this.getAttribute('data-id'));
+                        if (confirm('Ви впевнені, що хочете видалити цей матеріал?')) {
+                            deleteMaterial(materialId).then(() => {
+                                displayMaterials();
+                            }).catch(error => {
+                                console.error('Помилка видалення матеріалу:', error);
+                                alert('Помилка видалення матеріалу');
+                            });
+                        }
+                    });
+                });
+            }
+            
+            // Функція для конвертації Data URL в Blob
+            function dataURLToBlob(dataURL) {
+                const parts = dataURL.split(',');
+                const mime = parts[0].match(/:(.*?);/)[1];
+                const byteString = atob(parts[1]);
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                return new Blob([ab], { type: mime });
+            }
+            
+            // Функція для перетворення DOCX в HTML
+            function convertDocxToHtml(blob) {
+                return new Promise((resolve, reject) => {
+                    mammoth.convertToHtml({arrayBuffer: blob})
+                        .then(function(result){
+                            // Додаємо target="_blank" для всіх посилань
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = result.value;
+                            const links = tempDiv.querySelectorAll('a[href]');
+                            links.forEach(link => {
+                                link.setAttribute('target', '_blank');
+                                link.setAttribute('rel', 'noopener noreferrer');
+                            });
+                            resolve(tempDiv.innerHTML);
+                        })
+                        .catch(function(error) {
+                            reject(error);
+                        });
+                });
+            }
+            
+            // Функція для перетворення DOC в текст (спрощена версія)
+            function convertDocToText(blob) {
+                return new Promise((resolve) => {
+                    resolve('<div class="unsupported-preview"><p>Файли формату .doc не підтримуються для перегляду. Будь ласка, завантажте файл для перегляду.</p></div>');
+                });
+            }
+            
+            // Функція для відображення сторінки PDF
+            function renderPage(pageNum, pdfDoc, container, currentScale) {
+                pdfDoc.getPage(pageNum).then(function(page) {
+                    const viewport = page.getViewport({ scale: currentScale });
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const pageDiv = document.createElement('div');
+                    pageDiv.className = 'pdf-page';
+                    
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    pageDiv.appendChild(canvas);
+                    container.innerHTML = '';
+                    container.appendChild(pageDiv);
+                    
+                    const renderContext = {
+                        canvasContext: ctx,
+                        viewport: viewport
+                    };
+                    
+                    page.render(renderContext);
+                });
+            }
+            
+            // Функції для навігації по PDF
+            function onPrevPage() {
+                if (currentPageNum <= 1) {
+                    return;
+                }
+                currentPageNum--;
+                renderPage(currentPageNum, pdfDoc, document.getElementById('pdf-page-container'), scale);
+                updatePdfPageInfo();
+            }
+            
+            function onNextPage() {
+                if (currentPageNum >= pdfDoc.numPages) {
+                    return;
+                }
+                currentPageNum++;
+                renderPage(currentPageNum, pdfDoc, document.getElementById('pdf-page-container'), scale);
+                updatePdfPageInfo();
+            }
+            
+            function gotoPage(pageNum) {
+                if (pageNum >= 1 && pageNum <= pdfDoc.numPages) {
+                    currentPageNum = pageNum;
+                    renderPage(currentPageNum, pdfDoc, document.getElementById('pdf-page-container'), scale);
+                    updatePdfPageInfo();
+                }
+            }
+            
+            function updatePdfPageInfo() {
+                const pageInput = document.getElementById('pdf-page-input');
+                const pageInfo = document.getElementById('pdf-page-info');
+                if (pageInput) {
+                    pageInput.value = currentPageNum;
+                }
+                if (pageInfo) {
+                    pageInfo.textContent = ` / ${pdfDoc.numPages}`;
+                }
+            }
+            
+            function zoomIn() {
+                if (scale < 3) {
+                    scale += 0.25;
+                    renderPage(currentPageNum, pdfDoc, document.getElementById('pdf-page-container'), scale);
+                }
+            }
+            
+            function zoomOut() {
+                if (scale > 0.5) {
+                    scale -= 0.25;
+                    renderPage(currentPageNum, pdfDoc, document.getElementById('pdf-page-container'), scale);
+                }
+            }
+            
+            // Функції для контролю розміру шрифту в документах
+            function increaseFontSize() {
+                if (currentFontSize < 200) {
+                    currentFontSize += 10;
+                    updateFontSize();
+                }
+            }
+            
+            function decreaseFontSize() {
+                if (currentFontSize > 50) {
+                    currentFontSize -= 10;
+                    updateFontSize();
+                }
+            }
+            
+            function updateFontSize() {
+                const docPreview = document.querySelector('.doc-preview');
+                const textPreview = document.querySelector('.text-preview');
+                
+                if (docPreview) {
+                    docPreview.style.fontSize = currentFontSize + '%';
+                }
+                if (textPreview) {
+                    textPreview.style.fontSize = currentFontSize + '%';
+                }
+                
+                const fontSizeDisplay = document.getElementById('font-size-display');
+                if (fontSizeDisplay) {
+                    fontSizeDisplay.textContent = currentFontSize + '%';
+                }
+            }
+            
+            // Відкриття перегляду файлу
+            async function openPreview(materialId) {
+                try {
+                    const material = await getMaterialById(materialId);
+                    if (!material || material.type !== 'file') return;
+                    
+                    const previewModal = document.getElementById('preview-modal');
+                    const previewTitle = document.getElementById('preview-title');
+                    const previewContainer = document.getElementById('preview-container');
+                    
+                    previewTitle.textContent = material.fileName;
+                    previewContainer.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100%;">Завантаження...</div>';
+                    
+                    // Відкриття модального вікна в повному розмірі
+                    previewModal.style.display = 'flex';
+                    
+                    // Скидання розміру шрифту до значення за замовчуванням
+                    currentFontSize = 100;
+                    
+                    // Зміна заголовка сторінки на назву файлу
+                    document.title = material.fileName + ' - Математична бібліотека';
+                    
+                    // Визначення типу файлу та відображення відповідного перегляду
+                    const fileType = material.fileType || 'application/octet-stream';
+                    const blob = dataURLToBlob(material.data);
+                    
+                    if (fileType.startsWith('image/')) {
+                        // Перегляд зображень
+                        const img = document.createElement('img');
+                        img.src = material.data;
+                        img.alt = material.title;
+                        img.className = 'image-preview';
+                        previewContainer.innerHTML = '';
+                        previewContainer.appendChild(img);
+                    } else if (fileType === 'application/pdf') {
+                        // Перегляд PDF з використанням PDF.js
+                        previewContainer.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100%;">Завантаження PDF...</div>';
+                        
+                        try {
+                            const arrayBuffer = await blob.arrayBuffer();
+                            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                            
+                            loadingTask.promise.then(function(pdf) {
+                                pdfDoc = pdf;
+                                currentPageNum = 1;
+                                scale = 1.5;
+                                
+                                // Створюємо контейнер для PDF
+                                const pdfContainer = document.createElement('div');
+                                pdfContainer.className = 'pdf-container';
+                                
+                                // Створюємо панель керування
+                                const pdfControls = document.createElement('div');
+                                pdfControls.className = 'pdf-controls';
+                                
+                                const prevButton = document.createElement('button');
+                                prevButton.textContent = '← Попередня';
+                                prevButton.addEventListener('click', onPrevPage);
+                                
+                                const pageInput = document.createElement('input');
+                                pageInput.type = 'number';
+                                pageInput.id = 'pdf-page-input';
+                                pageInput.className = 'page-input';
+                                pageInput.value = currentPageNum;
+                                pageInput.min = 1;
+                                pageInput.max = pdfDoc.numPages;
+                                pageInput.addEventListener('change', function() {
+                                    gotoPage(parseInt(this.value));
+                                });
+                                
+                                const pageInfo = document.createElement('span');
+                                pageInfo.id = 'pdf-page-info';
+                                pageInfo.textContent = ` / ${pdfDoc.numPages}`;
+                                
+                                const nextButton = document.createElement('button');
+                                nextButton.textContent = 'Наступна →';
+                                nextButton.addEventListener('click', onNextPage);
+                                
+                                const zoomControls = document.createElement('div');
+                                zoomControls.className = 'zoom-controls';
+                                
+                                const zoomOutBtn = document.createElement('button');
+                                zoomOutBtn.className = 'zoom-btn';
+                                zoomOutBtn.textContent = '-';
+                                zoomOutBtn.title = 'Зменшити';
+                                zoomOutBtn.addEventListener('click', zoomOut);
+                                
+                                const zoomInBtn = document.createElement('button');
+                                zoomInBtn.className = 'zoom-btn';
+                                zoomInBtn.textContent = '+';
+                                zoomInBtn.title = 'Збільшити';
+                                zoomInBtn.addEventListener('click', zoomIn);
+                                
+                                zoomControls.appendChild(zoomOutBtn);
+                                zoomControls.appendChild(zoomInBtn);
+                                
+                                pdfControls.appendChild(prevButton);
+                                pdfControls.appendChild(pageInput);
+                                pdfControls.appendChild(pageInfo);
+                                pdfControls.appendChild(nextButton);
+                                pdfControls.appendChild(zoomControls);
+                                
+                                // Створюємо область перегляду
+                                const pdfViewer = document.createElement('div');
+                                pdfViewer.className = 'pdf-viewer';
+                                
+                                const pageContainer = document.createElement('div');
+                                pageContainer.id = 'pdf-page-container';
+                                
+                                pdfViewer.appendChild(pageContainer);
+                                pdfContainer.appendChild(pdfControls);
+                                pdfContainer.appendChild(pdfViewer);
+                                
+                                previewContainer.innerHTML = '';
+                                previewContainer.appendChild(pdfContainer);
+                                
+                                // Відображаємо першу сторінку
+                                renderPage(currentPageNum, pdfDoc, pageContainer, scale);
+                                
+                            }).catch(function(error) {
+                                console.error('Помилка завантаження PDF:', error);
+                                previewContainer.innerHTML = `
+                                    <div class="unsupported-preview">
+                                        <p>Помилка при перегляді PDF файлу.</p>
+                                        <p>Будь ласка, завантажте файл для перегляду.</p>
+                                        <button class="material-link download-btn" data-id="${material.id}" data-filename="${material.fileName}">Завантажити файл</button>
+                                    </div>
+                                `;
+                            });
+                        } catch (error) {
+                            console.error('Помилка обробки PDF:', error);
+                            previewContainer.innerHTML = `
+                                <div class="unsupported-preview">
+                                    <p>Помилка при перегляді PDF файлу.</p>
+                                    <p>Будь ласка, завантажте файл для перегляду.</p>
+                                    <button class="material-link download-btn" data-id="${material.id}" data-filename="${material.fileName}">Завантажити файл</button>
+                                </div>
+                            `;
+                        }
+                    } else if (fileType.includes('vnd.openxmlformats-officedocument.wordprocessingml.document') || 
+                               fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                        // Перегляд DOCX
+                        previewContainer.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100%;">Конвертація DOCX...</div>';
+                        try {
+                            const htmlContent = await convertDocxToHtml(await blob.arrayBuffer());
+                            const docPreview = document.createElement('div');
+                            docPreview.className = 'doc-preview';
+                            docPreview.innerHTML = htmlContent;
+                            
+                            // Створюємо контейнер для DOCX
+                            const docxContainer = document.createElement('div');
+                            docxContainer.className = 'pdf-container';
+                            
+                            // Створюємо панель керування для DOCX
+                            const docxControls = document.createElement('div');
+                            docxControls.className = 'docx-controls';
+                            
+                            const fontSizeControls = document.createElement('div');
+                            fontSizeControls.className = 'font-size-controls';
+                            
+                            const fontSizeDecreaseBtn = document.createElement('button');
+                            fontSizeDecreaseBtn.className = 'font-size-btn';
+                            fontSizeDecreaseBtn.textContent = 'A-';
+                            fontSizeDecreaseBtn.title = 'Зменшити шрифт';
+                            fontSizeDecreaseBtn.addEventListener('click', decreaseFontSize);
+                            
+                            const fontSizeDisplay = document.createElement('span');
+                            fontSizeDisplay.id = 'font-size-display';
+                            fontSizeDisplay.className = 'font-size-display';
+                            fontSizeDisplay.textContent = currentFontSize + '%';
+                            
+                            const fontSizeIncreaseBtn = document.createElement('button');
+                            fontSizeIncreaseBtn.className = 'font-size-btn';
+                            fontSizeIncreaseBtn.textContent = 'A+';
+                            fontSizeIncreaseBtn.title = 'Збільшити шрифт';
+                            fontSizeIncreaseBtn.addEventListener('click', increaseFontSize);
+                            
+                            fontSizeControls.appendChild(fontSizeDecreaseBtn);
+                            fontSizeControls.appendChild(fontSizeDisplay);
+                            fontSizeControls.appendChild(fontSizeIncreaseBtn);
+                            
+                            docxControls.appendChild(fontSizeControls);
+                            docxContainer.appendChild(docxControls);
+                            docxContainer.appendChild(docPreview);
+                            
+                            previewContainer.innerHTML = '';
+                            previewContainer.appendChild(docxContainer);
+                            
+                            // Встановлюємо початковий розмір шрифту
+                            updateFontSize();
+                            
+                        } catch (error) {
+                            console.error('Помилка конвертації DOCX:', error);
+                            previewContainer.innerHTML = `
+                                <div class="unsupported-preview">
+                                    <p>Помилка при перегляді DOCX файлу.</p>
+                                    <p>Будь ласка, завантажте файл для перегляду.</p>
+                                    <button class="material-link download-btn" data-id="${material.id}" data-filename="${material.fileName}">Завантажити файл</button>
+                                </div>
+                            `;
+                        }
+                    } else if (fileType.includes('msword') || fileType === 'application/msword') {
+                        // Перегляд DOC
+                        previewContainer.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100%;">Обробка DOC...</div>';
+                        try {
+                            const textContent = await convertDocToText(blob);
+                            const docPreview = document.createElement('div');
+                            docPreview.className = 'doc-preview';
+                            docPreview.innerHTML = textContent;
+                            
+                            // Створюємо контейнер для DOC
+                            const docContainer = document.createElement('div');
+                            docContainer.className = 'pdf-container';
+                            
+                            // Створюємо панель керування для DOC
+                            const docControls = document.createElement('div');
+                            docControls.className = 'docx-controls';
+                            
+                            const fontSizeControls = document.createElement('div');
+                            fontSizeControls.className = 'font-size-controls';
+                            
+                            const fontSizeDecreaseBtn = document.createElement('button');
+                            fontSizeDecreaseBtn.className = 'font-size-btn';
+                            fontSizeDecreaseBtn.textContent = 'A-';
+                            fontSizeDecreaseBtn.title = 'Зменшити шрифт';
+                            fontSizeDecreaseBtn.addEventListener('click', decreaseFontSize);
+                            
+                            const fontSizeDisplay = document.createElement('span');
+                            fontSizeDisplay.id = 'font-size-display';
+                            fontSizeDisplay.className = 'font-size-display';
+                            fontSizeDisplay.textContent = currentFontSize + '%';
+                            
+                            const fontSizeIncreaseBtn = document.createElement('button');
+                            fontSizeIncreaseBtn.className = 'font-size-btn';
+                            fontSizeIncreaseBtn.textContent = 'A+';
+                            fontSizeIncreaseBtn.title = 'Збільшити шрифт';
+                            fontSizeIncreaseBtn.addEventListener('click', increaseFontSize);
+                            
+                            fontSizeControls.appendChild(fontSizeDecreaseBtn);
+                            fontSizeControls.appendChild(fontSizeDisplay);
+                            fontSizeControls.appendChild(fontSizeIncreaseBtn);
+                            
+                            docControls.appendChild(fontSizeControls);
+                            docContainer.appendChild(docControls);
+                            docContainer.appendChild(docPreview);
+                            
+                            previewContainer.innerHTML = '';
+                            previewContainer.appendChild(docContainer);
+                            
+                            // Встановлюємо початковий розмір шрифту
+                            updateFontSize();
+                            
+                        } catch (error) {
+                            console.error('Помилка обробки DOC:', error);
+                            previewContainer.innerHTML = `
+                                <div class="unsupported-preview">
+                                    <p>Помилка при перегляді DOC файлу.</p>
+                                    <p>Будь ласка, завантажте файл для перегляду.</p>
+                                    <button class="material-link download-btn" data-id="${material.id}" data-filename="${material.fileName}">Завантажити файл</button>
+                                </div>
+                            `;
+                        }
+                    } else if (fileType.startsWith('text/')) {
+                        // Перегляд текстових файлів
+                        const reader = new FileReader();
+                        reader.onload = function() {
+                            const pre = document.createElement('pre');
+                            pre.className = 'text-preview';
+                            pre.textContent = reader.result;
+                            
+                            // Створюємо контейнер для тексту
+                            const textContainer = document.createElement('div');
+                            textContainer.className = 'pdf-container';
+                            
+                            // Створюємо панель керування для тексту
+                            const textControls = document.createElement('div');
+                            textControls.className = 'docx-controls';
+                            
+                            const fontSizeControls = document.createElement('div');
+                            fontSizeControls.className = 'font-size-controls';
+                            
+                            const fontSizeDecreaseBtn = document.createElement('button');
+                            fontSizeDecreaseBtn.className = 'font-size-btn';
+                            fontSizeDecreaseBtn.textContent = 'A-';
+                            fontSizeDecreaseBtn.title = 'Зменшити шрифт';
+                            fontSizeDecreaseBtn.addEventListener('click', decreaseFontSize);
+                            
+                            const fontSizeDisplay = document.createElement('span');
+                            fontSizeDisplay.id = 'font-size-display';
+                            fontSizeDisplay.className = 'font-size-display';
+                            fontSizeDisplay.textContent = currentFontSize + '%';
+                            
+                            const fontSizeIncreaseBtn = document.createElement('button');
+                            fontSizeIncreaseBtn.className = 'font-size-btn';
+                            fontSizeIncreaseBtn.textContent = 'A+';
+                            fontSizeIncreaseBtn.title = 'Збільшити шрифт';
+                            fontSizeIncreaseBtn.addEventListener('click', increaseFontSize);
+                            
+                            fontSizeControls.appendChild(fontSizeDecreaseBtn);
+                            fontSizeControls.appendChild(fontSizeDisplay);
+                            fontSizeControls.appendChild(fontSizeIncreaseBtn);
+                            
+                            textControls.appendChild(fontSizeControls);
+                            textContainer.appendChild(textControls);
+                            textContainer.appendChild(pre);
+                            
+                            previewContainer.innerHTML = '';
+                            previewContainer.appendChild(textContainer);
+                            
+                            // Встановлюємо початковий розмір шрифту
+                            updateFontSize();
+                        };
+                        reader.readAsText(blob);
+                    } else {
+                        // Для інших типів файлів
+                        previewContainer.innerHTML = `
+                            <div class="unsupported-preview">
+                                <p>Перегляд цього типу файлів не підтримується.</p>
+                                <p>Будь ласка, завантажте файл для перегляду.</p>
+                                <button class="material-link download-btn" data-id="${material.id}" data-filename="${material.fileName}">Завантажити файл</button>
+                            </div>
+                        `;
+                    }
+                    
+                } catch (error) {
+                    console.error('Помилка при відкритті перегляду:', error);
+                    alert('Помилка відкриття файлу для перегляду');
+                }
+            }
+            
+            // Отримання матеріалу за ID
+            function getMaterialById(id) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([STORE_NAME], 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.get(id);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            
+            // Завантаження файлу
+            async function downloadMaterial(materialId, fileName) {
+                try {
+                    const material = await getMaterialById(materialId);
+                    if (!material || material.type !== 'file') return;
+                    
+                    // Створення посилання для завантаження
+                    const a = document.createElement('a');
+                    a.href = material.data;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                } catch (error) {
+                    console.error('Помилка при завантаженні файлу:', error);
+                    alert('Помилка завантаження файлу');
+                }
+            }
+            
+            // Функція для закриття модального вікна перегляду
+            function closePreviewModal() {
+                if (currentObjectURL) {
+                    URL.revokeObjectURL(currentObjectURL);
+                    currentObjectURL = null;
+                }
+                document.getElementById('preview-modal').style.display = 'none';
+                
+                // Відновлення оригінального заголовка сторінки
+                document.title = originalTitle;
+            }
+            
+            // Закриття модального вікна перегляду
+            document.getElementById('close-preview').addEventListener('click', closePreviewModal);
+            
+            // Закриття модального вікна при кліку поза ним
+            document.getElementById('preview-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePreviewModal();
+                }
+            });
+            
+            // Експорт даних
+            async function exportData() {
+                try {
+                    const materials = await getAllMaterials();
+                    const dataStr = JSON.stringify(materials, null, 2);
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(dataBlob);
+                    
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'math_library_backup.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    URL.revokeObjectURL(url);
+                    
+                    alert(`Експорт завершено! Експортовано ${materials.length} матеріалів.`);
+                } catch (error) {
+                    console.error('Помилка експорту:', error);
+                    alert('Помилка експорту даних');
+                }
+            }
+            
+            // Імпорт даних
+            async function importData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                try {
+                    const reader = new FileReader();
+                    
+                    reader.onload = async function(e) {
+                        try {
+                            const materials = JSON.parse(e.target.result);
+                            
+                            if (!Array.isArray(materials)) {
+                                throw new Error('Некоректний формат файлу');
+                            }
+                            
+                            if (!confirm(`Ви впевнені, що хочете імпортувати ${materials.length} матеріалів? Існуючі матеріали будуть перезаписані.`)) {
+                                return;
+                            }
+                            
+                            // Очищаємо всі поточні матеріали
+                            await clearAllMaterials();
+                            
+                            // Додаємо нові матеріали
+                            for (const material of materials) {
+                                await saveMaterial(material);
+                            }
+                            
+                            // Оновлюємо відображення
+                            await displayMaterials();
+                            
+                            alert(`Імпорт завершено! Успішно імпортовано ${materials.length} матеріалів.`);
+                            
+                        } catch (error) {
+                            console.error('Помилка імпорту:', error);
+                            alert('Помилка імпорту даних: ' + error.message);
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                    
+                } catch (error) {
+                    console.error('Помилка читання файлу:', error);
+                    alert('Помилка читання файлу');
+                }
+                
+                // Скидаємо значення input, щоб можна було вибрати той самий файл знову
+                event.target.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
