@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математична бібліотека</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">Математична бібліотека</div>
+        <div class="tagline">Підручники, матеріали та корисні ресурси з математики</div>
+        <nav>
+            <button class="nav-btn active" data-tab="textbooks">Підручники</button>
+            <button class="nav-btn" data-tab="algebra">Алгебра</button>
+            <button class="nav-btn" data-tab="geometry">Геометрія</button>
+            <button class="nav-btn" data-tab="useful">Корисне</button>
+            <button class="nav-btn" data-tab="add">Додати матеріали</button>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div id="textbooks" class="tab-content active">
+            <h2>Підручники</h2>
+            <div class="materials-list" id="textbooks-materials">
+                <div class="empty-message">Поки що немає матеріалів у цьому розділі</div>
+            </div>
+        </div>
+        
+        <div id="algebra" class="tab-content">
+            <h2>Алгебра</h2>
+            <div class="materials-list" id="algebra-materials">
+                <div class="empty-message">Поки що немає матеріалів у цьому розділі</div>
+            </div>
+        </div>
+        
+        <div id="geometry" class="tab-content">
+            <h2>Геометрія</h2>
+            <div class="materials-list" id="geometry-materials">
+                <div class="empty-message">Поки що немає матеріалів у цьому розділі</div>
+            </div>
+        </div>
+        
+        <div id="useful" class="tab-content">
+            <h2>Корисне</h2>
+            <div class="materials-list" id="useful-materials">
+                <div class="empty-message">Поки що немає матеріалів у цьому розділі</div>
+            </div>
+        </div>
+        
+        <div id="add" class="tab-content">
+            <h2>Додати матеріали</h2>
+            
+            <div class="success-message">
+                <strong>Додавання матеріалів:</strong> Ви можете завантажити файли або додати посилання на корисні ресурси.
+            </div>
+            
+            <div class="upload-type-selector">
+                <button type="button" class="upload-type-btn active" id="file-type-btn">Файли</button>
+                <button type="button" class="upload-type-btn" id="link-type-btn">Посилання</button>
+            </div>
+            
+            <!-- Форма для завантаження файлів -->
+            <div id="file-upload-group">
+                <form class="add-material-form" id="batch-upload-form">
+                    <div class="form-group">
+                        <label for="batch-category">Категорія для всіх файлів</label>
+                        <select id="batch-category" required>
+                            <option value="">Оберіть категорію</option>
+                            <option value="textbooks">Підручники</option>
+                            <option value="algebra">Алгебра</option>
+                            <option value="geometry">Геометрія</option>
+                            <option value="useful">Корисне</option>
+                        </select>
+                    </div>
+                    
+                    <div class="file-upload-container">
+                        <div class="file-upload-icon">📁</div>
+                        <label for="file-upload" class="file-upload-label">Оберіть файли для завантаження</label>
+                        <input type="file" id="file-upload" class="file-input" multiple>
+                        <div class="file-info" id="file-info">Файли не обрані</div>
+                    </div>
+                    
+                    <div class="files-list" id="files-list" style="display: none;">
+                        <h4>Обрані файли:</h4>
+                        <div id="files-container"></div>
+                    </div>
+                    
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text"></div>
+                    
+                    <div class="upload-actions">
+                        <button type="submit" class="upload-btn" id="upload-btn">Завантажити всі файли</button>
+                        <button type="button" class="clear-btn" id="clear-btn">Очистити список</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Форма для додавання посилань -->
+            <div id="link-upload-group" style="display: none;">
+                <div class="link-form-container">
+                    <form class="add-material-form" id="link-material-form">
+                        <div class="form-group">
+                            <label for="link-title">Назва посилання</label>
+                            <input type="text" id="link-title" required placeholder="Наприклад: Онлайн-курс з алгебри">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="link-description">Опис (необов'язково)</label>
+                            <textarea id="link-description" rows="3" placeholder="Короткий опис ресурсу..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="link-url">Посилання</label>
+                            <input type="url" id="link-url" required placeholder="https://example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="link-category">Категорія</label>
+                            <select id="link-category" required>
+                                <option value="textbooks">Підручники</option>
+                                <option value="algebra">Алгебра</option>
+                                <option value="geometry">Геометрія</option>
+                                <option value="useful">Корисне</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit">Додати посилання</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Секція для резервного копіювання та відновлення -->
+            <div class="backup-section">
+                <h3>Резервне копіювання та відновлення</h3>
+                <p>Експортуйте всі ваші матеріали у файл для збереження або імпортуйте їх з іншого пристрою.</p>
+                
+                <div class="backup-actions">
+                    <button type="button" class="backup-btn" id="export-btn">Експортувати всі матеріали</button>
+                    <button type="button" class="restore-btn" id="import-btn">Імпортувати матеріали</button>
+                </div>
+
+                <!-- Нова секція хмарного зберігання -->
+                <div class="cloud-section">
+                    <h3>☁️ Хмарне зберігання (GitHub Gist)</h3>
+                    <p>Зберігайте ваші матеріали на GitHub Gist для доступу з будь-якого пристрою.</p>
+                    
+                    <div class="form-group">
+                        <label for="github-token">🔑 GitHub Personal Access Token</label>
+                        <input type="password" id="github-token" 
+                               placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" 
+                               style="font-family: monospace;">
+                        <div style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                            🔐 Токен зберігається тільки в цьому браузері.
+                            <a href="https://github.com/settings/tokens/new" target="_blank" style="color: #4361ee;">
+                                Створити токен
+                            </a> (потрібні права: gist)
+                        </div>
+                    </div>
+                    
+                    <div class="cloud-actions">
+                        <button type="button" class="cloud-btn" id="save-to-gist">💾 Зберегти на хмару</button>
+                        <button type="button" class="cloud-btn" id="load-from-gist">📥 Завантажити з хмари</button>
+                        <button type="button" class="cloud-btn" id="clear-gist-token">🗑️ Очистити токен</button>
+                    </div>
+                    
+                    <div id="gist-status"></div>
+                    
+                    <div class="github-info">
+                        <strong>ℹ️ Як це працює:</strong> 
+                        Ваші матеріали зберігаються у приватному GitHub Gist. Для цього потрібен персональний токен доступу.
+                        <br><br>
+                        <strong>📋 Як отримати токен:</strong>
+                        <ol style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                            <li>Перейдіть за <a href="https://github.com/settings/tokens/new" target="_blank" style="color: #4361ee;">посиланням</a></li>
+                            <li>Введіть назву токена (наприклад, "Math Library")</li>
+                            <li>Виберіть термін дії</li>
+                            <li>Відмітьте галочку "gist" в розділі permissions</li>
+                            <li>Натисніть "Generate token"</li>
+                            <li>Скопіюйте токен та вставте його у поле вище</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="backup-info">
+                    <strong>Як це працює:</strong> Експортуйте ваші матеріали у файл JSON, який можна зберегти на комп'ютері або в хмарі. Потім ви можете імпортувати цей файл на іншому пристрої чи в іншому браузері, щоб відновити всі ваші матеріали.
+                </div>
+                
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальне вікно для перегляду файлів -->
+    <div class="preview-modal" id="preview-modal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h3 class="preview-title" id="preview-title">Перегляд файлу</h3>
+                <button class="close-preview" id="close-preview">&times;</button>
+            </div>
+            <div class="preview-body" id="preview-container">
+                <!-- Тут буде відображатися вміст файлу -->
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Математична бібліотека &copy; 2024 | Використовує IndexedDB для зберігання файлів</p>
+    </footer>
+
+    <!-- Підключення бібліотек -->
+    <script src="https://unpkg.com/mammoth@1.4.17/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
